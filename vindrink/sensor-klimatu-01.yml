@@ -1,0 +1,206 @@
+# esphome:
+#   name: vindrik02
+#   friendly_name: Czujnik_02
+
+# esp8266:
+#   board: d1_mini_pro
+
+# # Enable logging
+# logger:
+
+# # Enable Home Assistant API
+# api:
+#   password: ""
+
+# ota:
+#   password: ""
+
+# wifi:
+#   ssid: "gampn3t"
+#   password: "s0ny3r1k50n"
+
+#   # Enable fallback hotspot (captive portal) in case wifi connection fails
+#   ap:
+#     ssid: "Vindrik01 Fallback Hotspot"
+#     password: "TL0h7nRmFUXz"
+
+# captive_portal:
+    
+# # Example configuration entry
+# uart:
+#   rx_pin: D7
+#   baud_rate: 9600
+
+# i2c:
+#   sda: D1
+#   scl: D2
+#   scan: true
+#   id: bus_a
+
+# sensor:
+#   - platform: pm1006
+#     pm_2_5:
+#       name: "Czujnik cząstek 2.5µm"
+   
+#   - platform: bme680
+#     temperature:
+#       name: "BME680 Temperature"
+#       oversampling: 16x
+#     pressure:
+#       name: "BME680 Pressure"
+#     humidity:
+#       name: "BME680 Humidity"
+#     gas_resistance:
+#       name: "BME680 Gas Resistance"
+#     address: 0x77
+#     update_interval: 60s
+
+
+    #---------------------------------------------------------------------------------
+
+esphome:
+  name: sensor-klimatu-01
+  friendly_name: Sensor Klimatu 01
+
+esp8266:
+  board: d1_mini
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  password: ""
+
+ota:
+  password: ""
+
+wifi:
+  ssid: "gampn3t"
+  password: "s0ny3r1k50n"
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "SensorKlimatu_01"
+    password: "1122334455667"
+
+captive_portal:
+    
+    
+## Serial Port for the IKEA Sensor
+uart:
+  - rx_pin: D7
+    # tx_pin: D8
+    baud_rate: 9600
+
+i2c:
+  ## I²C Port - For Temp/Humidity/Pressure & CO²/VOC Sensors
+  sda: D1
+  scl: D2
+  scan: true
+  id: bus_a
+
+bme680_bsec:
+    # id
+    # -----------
+    # Identifier for this component, useful when working with multiple devices.
+    # Must be unique, and can be used in the sensor sections to refer to the correct device.
+    # Default: auto-computed
+    id: bme680_internal
+
+    # i2c address
+    # -----------
+    # Common values are:
+    # - 0x76
+    # - 0x77
+    # Default: 0x76
+    address: 0x77
+
+    # Temperature offset
+    # ------------------
+    # Useful if device is in enclosure and reads too high
+    # For example, if it reads 5C too high, set this to 5
+    # This also corrects the relative humidity readings
+    # Default: 0
+    temperature_offset: 0
+
+    # IAQ calculation mode
+    # --------------------
+    # Available options:
+    # - static (for fixed position devices)
+    # - mobile (for on a person or other moveable devices)
+    # Default: static
+    iaq_mode: static
+
+    # Sample rate
+    # -----------
+    # Available options:
+    # - lp (low power - samples every 3 seconds)
+    # - ulp (ultra-low power - samples every 5 minutes)
+    # Default: lp
+    sample_rate: lp
+
+    # Interval at which to save BSEC state
+    # ------------------------------------
+    # Default: 6h
+    state_save_interval: 6h
+
+sensor:
+  ## IKEA PMS 2.5um Sensor
+  - platform: pm1006
+    id: aq_sensor
+    pm_2_5:
+      name: "IKEA 2.5µg"
+      
+  - platform: bme680_bsec
+    # ID of the bme680_bsec component to use for the next sensors.
+    # Useful when working with multiple devices
+    bme680_bsec_id: bme680_internal
+
+    temperature:
+      # Temperature in °C
+      name: "BME680 Temperatura"
+      sample_rate: lp
+      filters:
+        - median
+    pressure:
+      # Pressure in hPa
+      name: "BME680 Ciśnienie"
+      sample_rate: lp
+      filters:
+        - median
+    humidity:
+      # Relative humidity %
+      name: "BME680 Wilgotność"
+      sample_rate: lp
+      filters:
+        - median
+    gas_resistance:
+      # Gas resistance in Ω
+      name: "BME680 Gas Resistance"
+      filters:
+        - median
+    iaq:
+      # Indoor air quality value
+      name: "BME680 IAQ"
+      filters:
+        - median
+    iaq_accuracy:
+      # IAQ accuracy as a numeric value of 0, 1, 2, 3
+      name: "BME680 Wartość IAQ "
+    co2_equivalent:
+      # CO2 equivalent estimate in ppm
+      name: "BME680 CO2 Equivalent"
+      filters:
+        - median
+    breath_voc_equivalent:
+      # Volatile organic compounds equivalent estimate in ppm
+      name: "BME680 Breath VOC Equivalent"
+      filters:
+        - median
+
+text_sensor:
+  - platform: bme680_bsec
+    iaq_accuracy:
+      # IAQ accuracy as a text value of Stabilizing, Uncertain, Calibrating, Calibrated
+      name: "BME680 IAQ Accuracy"

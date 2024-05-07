@@ -60,7 +60,7 @@
 
 esphome:
   name: sensor-klimatu-02
-  friendly_name: Sensor Klimatu 02
+  friendly_name: Sensor Klimatu Taras
 
 esp8266:
   board: d1_mini
@@ -122,7 +122,7 @@ bme680_bsec:
     # For example, if it reads 5C too high, set this to 5
     # This also corrects the relative humidity readings
     # Default: 0
-    temperature_offset: 3.5
+    temperature_offset: 3.3
 
     # IAQ calculation mode
     # --------------------

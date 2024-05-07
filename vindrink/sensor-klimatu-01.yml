@@ -122,7 +122,7 @@ bme680_bsec:
     # For example, if it reads 5C too high, set this to 5
     # This also corrects the relative humidity readings
     # Default: 0
-    temperature_offset: 0
+    temperature_offset: 3.9
 
     # IAQ calculation mode
     # --------------------
